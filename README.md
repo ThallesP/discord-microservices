@@ -1,84 +1,187 @@
-# Turborepo starter
+# Discord Microservices
 
-This Turborepo starter is maintained by the Turborepo core team.
+A microservices architecture for Discord-related functionality, built with TypeScript and managed with Turborepo. This project demonstrates event-driven communication between services using RabbitMQ as the message broker.
 
-## Using this example
+## 🏗️ Architecture
 
-Run the following command:
+This project consists of multiple independent microservices that communicate through RabbitMQ:
 
-```sh
-npx create-turbo@latest
-```
+- **Chat Service** - Handles chat-related functionality and messaging
+- **Subscriptions Service** - Manages user subscriptions and notifications
+- **Shared Packages** - Common utilities, contracts, and UI components
 
-## What's inside?
+### Technology Stack
 
-This Turborepo includes the following packages/apps:
+- **Runtime**: Node.js 18+ with TypeScript
+- **Web Framework**: [Elysia](https://elysiajs.com/) - Fast and type-safe web framework
+- **Message Broker**: RabbitMQ for service-to-service communication
+- **Database**: Prisma ORM (database per service pattern)
+- **Monorepo**: Turborepo for efficient builds and development
+- **Package Manager**: PNPM
+- **Code Quality**: Biome for linting and formatting
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## 📁 Project Structure
 
 ```
-cd my-turborepo
-pnpm build
+discord-microservices/
+├── apps/
+│   ├── chat/           # Chat microservice
+│   └── subscriptions/  # Subscriptions microservice
+├── packages/
+│   ├── contracts/      # Shared TypeScript contracts
+│   ├── ui/            # Shared UI components
+│   ├── eslint-config/ # ESLint configuration
+│   └── typescript-config/ # TypeScript configuration
+└── docker-compose.yml # RabbitMQ message broker
 ```
 
-### Develop
+## 🚀 Getting Started
 
-To develop all apps and packages, run the following command:
+### Prerequisites
 
-```
-cd my-turborepo
+- Node.js 18 or higher
+- PNPM (recommended) or npm
+- Docker and Docker Compose (for RabbitMQ)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd discord-microservices
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
+
+3. **Start the message broker**
+   ```bash
+   docker-compose up -d
+   ```
+   This starts RabbitMQ with management interface available at http://localhost:15672 (guest/guest)
+
+4. **Set up environment variables**
+   
+   Create `.env` files in each service directory (`apps/chat/` and `apps/subscriptions/`) with the necessary environment variables. Refer to `.env.example` files if available.
+
+### Development
+
+To start all services in development mode:
+
+```bash
 pnpm dev
 ```
 
-### Remote Caching
+This will start all microservices with hot-reload enabled.
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+### Individual Service Development
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+To develop a specific service:
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+```bash
+# Chat service only
+cd apps/chat
+pnpm dev
 
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
+# Subscriptions service only
+cd apps/subscriptions
+pnpm dev
 ```
 
-## Useful Links
+## 🛠️ Available Scripts
 
-Learn more about the power of Turborepo:
+- `pnpm dev` - Start all services in development mode
+- `pnpm build` - Build all services and packages
+- `pnpm lint` - Run linting across all packages
+- `pnpm format` - Format code using Prettier
+- `pnpm check-types` - Run TypeScript type checking
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+## 🐳 Docker & Infrastructure
+
+### Message Broker (RabbitMQ)
+
+The project uses RabbitMQ as the message broker for inter-service communication:
+
+```bash
+# Start RabbitMQ
+docker-compose up -d
+
+# Stop RabbitMQ
+docker-compose down
+
+# View logs
+docker-compose logs broker
+```
+
+**RabbitMQ Management Interface**: http://localhost:15672
+- Username: `guest`
+- Password: `guest`
+
+## 🔧 Services Overview
+
+### Chat Service
+- **Port**: Configure in `.env`
+- **Purpose**: Handles chat messages, channels, and real-time communication
+- **Database**: Individual Prisma schema
+- **Message Queue**: Publishes and consumes chat-related events
+
+### Subscriptions Service
+- **Port**: Configure in `.env`
+- **Purpose**: Manages user subscriptions, notifications, and billing
+- **Database**: Individual Prisma schema
+- **Message Queue**: Publishes and consumes subscription-related events
+
+## 📦 Shared Packages
+
+- **@repo/contracts**: TypeScript interfaces and types shared between services
+- **@repo/ui**: Reusable UI components
+- **@repo/eslint-config**: Shared ESLint configuration
+- **@repo/typescript-config**: Shared TypeScript configuration
+
+## 🧪 Testing
+
+Each service can be tested independently:
+
+```bash
+# Run tests for all services
+pnpm test
+
+# Run tests for specific service
+cd apps/chat && pnpm test
+```
+
+## 🚢 Deployment
+
+For production deployment:
+
+1. Build all services:
+   ```bash
+   pnpm build
+   ```
+
+2. Set up production environment variables
+
+3. Deploy each service independently using your preferred platform (Docker, Kubernetes, etc.)
+
+4. Ensure RabbitMQ is running and accessible by all services
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the ISC License.
+
+## 🔗 Useful Links
+
+- [Turborepo Documentation](https://turborepo.com/docs)
+- [Elysia Documentation](https://elysiajs.com/)
+- [RabbitMQ Documentation](https://www.rabbitmq.com/documentation.html)
+- [Prisma Documentation](https://www.prisma.io/docs)
