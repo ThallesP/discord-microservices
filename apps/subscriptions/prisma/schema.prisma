@@ -13,3 +13,11 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Subscription {
+  id               String   @id
+  userId           String
+  subscriptionType String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
